@@ -9,12 +9,12 @@ const api = axios.create({
   },
 });
 
+// Request interceptor - adds Clerk token to Authorization header
+// Token will be added dynamically when making requests from components
 api.interceptors.request.use(
-  (config) => {
-    const token = localStorage.getItem('token');
-    if (token) {
-      config.headers.Authorization = `Bearer ${token}`;
-    }
+  async (config) => {
+    // Token will be added by components using useAuth hook
+    // This prevents errors during initial app load
     return config;
   },
   (error) => {
@@ -22,41 +22,41 @@ api.interceptors.request.use(
   }
 );
 
+// Response interceptor - handle 401 errors
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
-      window.location.href = '/login';
+      console.error('Unauthorized - user needs to sign in');
+      // Clerk will handle redirect to sign-in if needed
     }
     return Promise.reject(error);
   }
 );
 
-export const authAPI = {
-  register: (userData) => api.post('/auth/register', userData),
-  login: (credentials) => api.post('/auth/login', credentials),
-  getCurrentUser: () => api.get('/auth/me'),
-};
-
 export const imagesAPI = {
-  upload: (formData, onUploadProgress) => {
+  upload: (formData, config = {}) => {
     return api.post('/images/upload', formData, {
       headers: {
         'Content-Type': 'multipart/form-data',
+        ...config.headers,
       },
-      onUploadProgress,
+      ...config,
     });
   },
-  getAll: (params) => api.get('/images', { params }),
-  getById: (id) => api.get(`/images/${id}`),
-  delete: (id) => api.delete(`/images/${id}`),
+  getAll: (params, config = {}) => api.get('/images', { params, ...config }),
+  getById: (id, config = {}) => api.get(`/images/${id}`, config),
+  delete: (id, config = {}) => api.delete(`/images/${id}`, config),
 };
 
 export const searchAPI = {
-  search: (query, params) => api.get('/search', { params: { query, ...params } }),
-  getTags: () => api.get('/tags'),
+  search: (query, params = {}, config = {}) => {
+    const searchParams = typeof params === 'object' && !params.headers 
+      ? { params: { query, ...params } }
+      : { params: { query } };
+    return api.get('/search', { ...searchParams, ...config });
+  },
+  getTags: (config = {}) => api.get('/tags', config),
 };
 
 export default api;

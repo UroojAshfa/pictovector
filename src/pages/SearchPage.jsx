@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Search, Image, Upload, X, SlidersHorizontal, Grid, List, ArrowUpDown, LogOut } from 'lucide-react';
+import { Search, Image, Upload, X, SlidersHorizontal, Grid, List, ArrowUpDown } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { useImages } from '../context/ImagesContext';
+import { UserButton } from '@clerk/clerk-react';
 
 const SearchPage = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
   const { images, searchResults, popularTags, loading, fetchImages, searchImages, fetchTags } = useImages();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedImage, setSelectedImage] = useState(null);
@@ -171,13 +170,7 @@ const SearchPage = () => {
               Upload
             </button>
 
-            <button
-              onClick={logout}
-              className="flex items-center gap-2 px-3 py-3 text-gray-600 hover:text-red-600 transition-colors"
-              title="Logout"
-            >
-              <LogOut className="w-5 h-5" />
-            </button>
+            <UserButton afterSignOutUrl="/" />
           </div>
         </div>
       </nav>

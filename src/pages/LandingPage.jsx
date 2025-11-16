@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Search, Upload, Image, Sparkles, ArrowRight, CheckCircle } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { SignedIn, SignedOut, SignInButton, SignUpButton, UserButton } from '@clerk/clerk-react';
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -26,20 +27,31 @@ const LandingPage = () => {
           <div className="flex items-center gap-2 cursor-pointer" onClick={() => navigate('/')}>
             <Image className="w-8 h-8 text-indigo-600" />
             <span className="text-xl font-bold bg-gradient-to-r from-indigo-600 to-pink-600 bg-clip-text text-transparent">
-              PictoVector
+              Fotopico
             </span>
           </div>
           <div className="flex items-center gap-4">
-            <button onClick={() => navigate('/login')}
-            className="px-4 py-2 text-gray-700 hover:text-indigo-600 transition-colors">
-              Sign In
-            </button>
-            <button 
-              onClick={() => navigate('/upload')}
-              className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all hover:scale-105"
-            >
-              Get Started
-            </button>
+            <SignedOut>
+              <SignInButton mode="modal">
+                <button className="px-4 py-2 text-gray-700 hover:text-indigo-600 transition-colors">
+                  Sign In
+                </button>
+              </SignInButton>
+              <SignUpButton mode="modal">
+                <button className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all hover:scale-105">
+                  Get Started
+                </button>
+              </SignUpButton>
+            </SignedOut>
+            <SignedIn>
+              <UserButton afterSignOutUrl="/" />
+              <button 
+                onClick={() => navigate('/search')}
+                className="px-6 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-all hover:scale-105"
+              >
+                Go to Search
+              </button>
+            </SignedIn>
           </div>
         </div>
       </nav>
@@ -49,19 +61,18 @@ const LandingPage = () => {
           <div className="text-center mb-12">
             <div className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-100 rounded-full text-indigo-700 mb-6">
               <Sparkles className="w-4 h-4" />
-              <span className="text-sm font-medium">Powered by Gemini AI</span>
+              <span className="text-sm font-medium">Powered by AI</span>
             </div>
             
             <h1 className="text-6xl font-bold mb-6 bg-gradient-to-r from-gray-900 via-indigo-900 to-pink-900 bg-clip-text text-transparent leading-tight">
               Search Your Visual Memory
               <br />
-              With AI Intelligence
+              With Intelligence
             </h1>
             
             <p className="text-xl text-gray-600 mb-12 max-w-2xl mx-auto">
               Upload photos. Search naturally. Find anything instantly.
               <br />
-              No more scrolling through endless camera rolls.
             </p>
 
             <div className="relative max-w-2xl mx-auto mb-8">
@@ -120,7 +131,7 @@ const LandingPage = () => {
 
           <div className="text-center mb-12">
             <p className="text-2xl font-semibold text-gray-800 mb-8">
-              AI understands context, not just objects
+            No more scrolling through endless camera rolls.
             </p>
           </div>
 
@@ -131,7 +142,7 @@ const LandingPage = () => {
               </div>
               <h3 className="text-xl font-semibold mb-3">Smart Tagging</h3>
               <p className="text-gray-600">
-                AI analyzes objects, scenes, emotions, activities, and context automatically
+                Analyze visual objects, emotions and context automatically
               </p>
             </div>
 
@@ -141,7 +152,7 @@ const LandingPage = () => {
               </div>
               <h3 className="text-xl font-semibold mb-3">Natural Search</h3>
               <p className="text-gray-600">
-                Search using everyday language, just like talking to a friend
+                Seamless search experience with any language
               </p>
             </div>
 
@@ -151,14 +162,14 @@ const LandingPage = () => {
               </div>
               <h3 className="text-xl font-semibold mb-3">Confidence Scores</h3>
               <p className="text-gray-600">
-                See exactly how well each result matches your search with transparent scoring
+                Each result matches your search with transparent scoring
               </p>
             </div>
           </div>
 
           <div className="bg-gradient-to-r from-indigo-600 to-pink-600 rounded-3xl p-12 text-center text-white">
             <h2 className="text-3xl font-bold mb-4">Ready to find your memories?</h2>
-            <p className="text-xl mb-8 opacity-90">Start organizing your photos with AI today</p>
+            <p className="text-xl mb-8 opacity-90">Start organizing your photos with Fotopico today</p>
             <button 
               onClick={() => navigate('/upload')}
               className="px-8 py-4 bg-white text-indigo-600 rounded-xl hover:bg-gray-100 transition-all font-semibold text-lg hover:scale-105"
@@ -171,7 +182,7 @@ const LandingPage = () => {
 
       <footer className="border-t border-gray-200 py-8">
         <div className="max-w-6xl mx-auto px-6 text-center text-gray-600">
-          <p>© 2025 PictoVector. Built for AI Genesis Hackathon.</p>
+          <p>© 2025 Fotopico. Built for AI Genesis Hackathon.</p>
         </div>
       </footer>
     </div>

@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext } from 'react';
 import { imagesAPI, searchAPI } from '../services/api';
 import toast from 'react-hot-toast';
+import { useAuth } from '@clerk/clerk-react';
 
 const ImagesContext = createContext(null);
 
@@ -13,6 +14,7 @@ export const useImages = () => {
 };
 
 export const ImagesProvider = ({ children }) => {
+  const { getToken, isLoaded } = useAuth();
   const [images, setImages] = useState([]);
   const [searchResults, setSearchResults] = useState([]);
   const [popularTags, setPopularTags] = useState([]);
@@ -22,7 +24,16 @@ export const ImagesProvider = ({ children }) => {
   const fetchImages = async (filters = {}) => {
     setLoading(true);
     try {
-      const { data } = await imagesAPI.getAll(filters);
+      let token = null;
+      if (isLoaded && getToken) {
+        try {
+          token = await getToken();
+        } catch (err) {
+          // User not authenticated, continue without token
+        }
+      }
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+      const { data } = await imagesAPI.getAll(filters, config);
       setImages(data.images || []);
       return { success: true, data: data.images };
     } catch (error) {
@@ -44,15 +55,30 @@ export const ImagesProvider = ({ children }) => {
     }));
 
     try {
-      const { data } = await imagesAPI.upload(formData, (progressEvent) => {
-        const percentCompleted = Math.round(
-          (progressEvent.loaded * 100) / progressEvent.total
-        );
-        setUploadProgress((prev) => ({
-          ...prev,
-          [fileId]: { ...prev[fileId], progress: percentCompleted },
-        }));
-      });
+      let token = null;
+      if (isLoaded && getToken) {
+        try {
+          token = await getToken();
+        } catch (err) {
+          // User not authenticated, continue without token
+        }
+      }
+      const config = {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          ...(token && { Authorization: `Bearer ${token}` }),
+        },
+        onUploadProgress: (progressEvent) => {
+          const percentCompleted = Math.round(
+            (progressEvent.loaded * 100) / progressEvent.total
+          );
+          setUploadProgress((prev) => ({
+            ...prev,
+            [fileId]: { ...prev[fileId], progress: percentCompleted },
+          }));
+        },
+      };
+      const { data } = await imagesAPI.upload(formData, config);
 
       setUploadProgress((prev) => ({
         ...prev,
@@ -79,7 +105,16 @@ export const ImagesProvider = ({ children }) => {
 
   const deleteImage = async (id) => {
     try {
-      await imagesAPI.delete(id);
+      let token = null;
+      if (isLoaded && getToken) {
+        try {
+          token = await getToken();
+        } catch (err) {
+          // User not authenticated, continue without token
+        }
+      }
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+      await imagesAPI.delete(id, config);
       setImages((prev) => prev.filter((img) => img.id !== id));
       toast.success('Image deleted');
       return { success: true };
@@ -92,7 +127,16 @@ export const ImagesProvider = ({ children }) => {
   const searchImages = async (query, filters = {}) => {
     setLoading(true);
     try {
-      const { data } = await searchAPI.search(query, filters);
+      let token = null;
+      if (isLoaded && getToken) {
+        try {
+          token = await getToken();
+        } catch (err) {
+          // User not authenticated, continue without token
+        }
+      }
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+      const { data } = await searchAPI.search(query, filters, config);
       setSearchResults(data.results || []);
       return { success: true, data: data.results };
     } catch (error) {
@@ -105,7 +149,16 @@ export const ImagesProvider = ({ children }) => {
 
   const fetchTags = async () => {
     try {
-      const { data } = await searchAPI.getTags();
+      let token = null;
+      if (isLoaded && getToken) {
+        try {
+          token = await getToken();
+        } catch (err) {
+          // User not authenticated, continue without token
+        }
+      }
+      const config = token ? { headers: { Authorization: `Bearer ${token}` } } : {};
+      const { data } = await searchAPI.getTags(config);
       setPopularTags(data.tags || []);
       return { success: true, data: data.tags };
     } catch (error) {

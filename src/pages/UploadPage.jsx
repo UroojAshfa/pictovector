@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { Upload, X, Check, Loader, Image, ArrowLeft, Tag, LogOut } from 'lucide-react';
+import { Upload, X, Check, Loader, Image, ArrowLeft, Tag } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { useAuth } from '../context/AuthContext';
 import { useImages } from '../context/ImagesContext';
+import { UserButton } from '@clerk/clerk-react';
 
 const UploadPage = () => {
   const navigate = useNavigate();
-  const { user, logout } = useAuth();
   const { uploadImage, uploadProgress, fetchImages } = useImages();
   const [dragActive, setDragActive] = useState(false);
   const [recentUploads, setRecentUploads] = useState([]);
@@ -107,13 +106,7 @@ const UploadPage = () => {
             <span className="text-lg font-bold">Upload Photos</span>
           </div>
           <div className="flex items-center gap-4">
-            <span className="text-sm text-gray-600">{user?.name}</span>
-            <button
-              onClick={logout}
-              className="flex items-center gap-2 px-3 py-2 text-gray-600 hover:text-red-600 transition-colors"
-            >
-              <LogOut className="w-4 h-4" />
-            </button>
+            <UserButton afterSignOutUrl="/" />
           </div>
         </div>
       </nav>
