@@ -1,0 +1,9 @@
+{
+  "rewrites": [
+    {
+      "source": "/(upload|search)",
+      "destination": "/index.py"
+    }
+  ]
+
+}

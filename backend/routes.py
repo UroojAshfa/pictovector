@@ -30,7 +30,6 @@ bp = Blueprint('main', __name__)
 @bp.route('/upload', methods=['POST'])
 def upload():
     file = request.files['file']
-    response = request.get_json()
     id = uuid4().__str__()
     vercel_blob.put(id, file.read())
     return "Uploaded"
