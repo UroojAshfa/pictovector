@@ -1,13 +1,13 @@
 import unittest
 from dotenv import load_dotenv
 from pprint import pprint
-from src.qdb import Image, Qdb
-from src.llm import LLM
-from src.app import _wrap_image
+from backend.qdb import Image, Qdb
+from backend.llm import LLM
+from backend.routes import _wrap_image
 import requests
 from datasets import load_dataset
 
-from src.clients import get_qdb_client, get_genai_client
+from backend.clients import get_qdb_client, get_genai_client
 
 load_dotenv()
 dataset = load_dataset("huggingface/cats-image")

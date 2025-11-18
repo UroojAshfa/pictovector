@@ -1,3 +1,5 @@
+import os
+
 from config import *
 from google import genai
 from google.genai import Client, errors
@@ -24,20 +26,24 @@ def get_genai_client(api: str | None = None) -> Client:
 
     return _genai_client
 
-def get_qdb_client(localhost: str | None = None) -> QdrantClient:
+
+def get_qdb_client(host: str | None = None, api: str | None = None) -> QdrantClient:
     """
     Qdrant database client generator
-    :param localhost: str | None
+    :param host: str | None
+    :param api: str | None
     :return: QdrantClient
     """
     global _qdb_client
 
-    if localhost is None:
-        localhost = LOCALHOST
+    if host is None:
+        host = QDRANT_ENDPOINT
+    if api is None:
+        api = os.getenv("QDRANT_API_KEY")
 
     if _qdb_client is None:
         try:
-            _qdb_client = QdrantClient(localhost)
+            _qdb_client = QdrantClient(url=host, api_key=api)
         except Exception as msg:
             print(f"Qdrant Client Error: {msg}")
 

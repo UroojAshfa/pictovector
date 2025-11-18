@@ -2,6 +2,11 @@ from dotenv import load_dotenv
 import requests
 from qdrant_client import QdrantClient
 from google.genai import Client
+from flask import request, Blueprint, g
+import vercel_blob
+from uuid import uuid4
+
+from torch.distributed.elastic.multiprocessing.redirects import redirect
 
 from . import clients
 from .qdb import Image
@@ -21,8 +26,18 @@ def _wrap_image(urls: list[str]):
     images = [Image(requests.get(url).content, url) for url in urls]
     return images
 
+load_env()
+bp = Blueprint('main', __name__)
 
-if __name__ == "__main__":
+@bp.route('/upload', methods='POST')
+def upload():
+    file = request.files['file']
+    response = request.get_json()
+    id = uuid4().__str__()
+    vercel_blob.put(id, file.read())
+    return "Uploaded"
+
+if __name__ == '__main__':
     load_env()
 
 
